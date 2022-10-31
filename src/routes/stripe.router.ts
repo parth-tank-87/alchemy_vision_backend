@@ -2,6 +2,8 @@ import express from "express";
 import Stripe from "stripe";
 import config from "../config/app.config";
 
+const customerId = 'cus_MgoHfjV0l9VKBY';
+
 const stripe = new Stripe(config.stripeSecretKey || "", {
   apiVersion: config.apiVersion,
 } as Stripe.StripeConfig);
@@ -34,7 +36,6 @@ router.get("/plan", async (_req, res) => {
     const plans = await stripe.plans.list();
     return res.send({
       success: true,
-      message: "Subscription Created Successfully",
       plans,
     });
   } catch (e) {
@@ -80,21 +81,78 @@ router.post("/product", async (_req, res) => {
 
 router.post("/subscribe", async (_req, res) => {
   try {
-    const subscriptionCreate: Stripe.SubscriptionCreateParams = {
-      customer: "cus_MgoHfjV0l9VKBY",
+    const subscription = await stripe.subscriptions.create({
+      customer: customerId,
       items: [
         {
           plan: "plan_MgsPYDcOluRtz8",
         },
       ],
-    };
-
-    const subscription = await stripe.subscriptions.create(subscriptionCreate);
-
+    });
     return res.send({
       success: true,
       message: "Subscription Created Successfully",
       subscription,
+    });
+  } catch (e) {
+    console.log("error: ", e);
+  }
+});
+
+router.post("/card", async (_req, res) => {
+  try {
+    const createPaymentMethod = await stripe.paymentMethods.create({
+      type: 'card',
+      card: {
+        number: '4242424242424242',
+        exp_month: 10,
+        exp_year: 2023,
+        cvc: '314',
+      },
+    });
+
+    const attachPaymentMethod = await stripe.paymentMethods.attach(
+      createPaymentMethod.id,
+      { customer: customerId }
+    );
+
+    // const customer = await stripe.customers.update(
+    //   customerId,
+    //   {invoice_settings: {
+    //     default_payment_method: createPaymentMethod.id
+    //   }}
+    // );
+
+    return res.send({
+      success: true,
+      message: "Card added successfully",
+      attachPaymentMethod
+    });
+  } catch (e) {
+    console.log("error: ", e);
+  }
+});
+
+router.get("/card", async (_req, res) => {
+  try {
+    const abc: Stripe.PaymentMethodListParams = {
+      type: 'card'
+    }
+    const paymentMethods = await stripe.paymentMethods.list(abc);
+
+    return res.send({
+      paymentMethods,
+    });
+  } catch (e) {
+    console.log("error: ", e);
+  }
+});
+
+router.get("/customer", async (_req, res) => {
+  try {
+    const customer = await stripe.customers.retrieve(customerId);
+    return res.send({
+      customer
     });
   } catch (e) {
     console.log("error: ", e);
