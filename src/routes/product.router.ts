@@ -39,13 +39,14 @@ export default class ProductRouter {
 
     this.router.put("/:id", async (req, res) => {
       try {
-        const response = await this.controller.getProduct(req.params.id) as any;
+        const response = await this.controller.updateProduct(Number(req.params.id), req.body) as any;
         if (!response)
           res
             .status(StatusCodes.NOT_FOUND)
             .send({ message: "No comment found" });
         return res.send(response);
       } catch (e: any) {
+        console.log('e: ', e);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("OOPS");
       }
     });

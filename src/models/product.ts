@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, DeleteDateColumn, UpdateDateColumn } from "typeorm";
+import { 
+  Entity, 
+  Column, 
+  PrimaryGeneratedColumn, 
+  DeleteDateColumn, 
+  UpdateDateColumn 
+} from "typeorm";
 
 @Entity()
 export class Products {

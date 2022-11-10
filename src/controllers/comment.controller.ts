@@ -1,6 +1,6 @@
 import { Get, Route, Tags,  Post, Body, Path } from "tsoa";
-import {Comment} from '../models'
 import { getComments, ICommentPayload, createComment, getComment } from "../repositories/comment.repository";
+import { Comment } from '../models';
 
 @Route("comments")
 @Tags("Comment")

@@ -7,7 +7,7 @@ export interface IPostPayload {
   userId: number;
 }
 
-export const getPosts  = async () :Promise<Array<Post>> => {
+export const getPosts  = async () : Promise<Array<Post>> => {
   const postRepository = getRepository(Post);
   return postRepository.find()
 }

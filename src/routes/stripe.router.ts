@@ -1,6 +1,7 @@
 import express from "express";
 import Stripe from "stripe";
 import config from "../config/app.config";
+import messages from "../config/messages";
 
 const customerId = 'cus_MgoHfjV0l9VKBY';
 
@@ -23,7 +24,7 @@ router.post("/create-user", async (_req, res) => {
     const customer: Stripe.Customer = await stripe.customers.create(params);
     return res.send({
       success: true,
-      message: "customer created successfully",
+      message: messages.customer_create_success,
       customer,
     });
   } catch (e) {
@@ -56,7 +57,7 @@ router.post("/plan", async (_req, res) => {
 
     return res.send({
       success: true,
-      message: "Subscription Created Successfully",
+      message: messages.subscription_create_success,
       subscription,
     });
   } catch (e) {
@@ -71,7 +72,7 @@ router.post("/product", async (_req, res) => {
     });
     return res.send({
       success: true,
-      message: "Subscription Created Successfully",
+      message: messages.product_create_success,
       product,
     });
   } catch (e) {
@@ -91,7 +92,7 @@ router.post("/subscribe", async (_req, res) => {
     });
     return res.send({
       success: true,
-      message: "Subscription Created Successfully",
+      message: messages.subscription_create_success,
       subscription,
     });
   } catch (e) {
@@ -104,7 +105,7 @@ router.post("/card", async (_req, res) => {
     const createPaymentMethod = await stripe.paymentMethods.create({
       type: 'card',
       card: {
-        number: '4242424242424242',
+        number: '4242 4242 4242 4242',
         exp_month: 10,
         exp_year: 2023,
         cvc: '314',
@@ -131,7 +132,7 @@ router.post("/card", async (_req, res) => {
   } catch (e) {
     console.log("error: ", e);
   }
-});
+}); 
 
 router.get("/card", async (_req, res) => {
   try {
@@ -139,7 +140,6 @@ router.get("/card", async (_req, res) => {
       type: 'card'
     }
     const paymentMethods = await stripe.paymentMethods.list(abc);
-
     return res.send({
       paymentMethods,
     });

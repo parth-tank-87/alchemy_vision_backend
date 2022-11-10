@@ -8,6 +8,7 @@ import {
   getProduct,
   removeProduct,
   updateProduct,
+  IProductUpdatePayload
 } from "../repositories/product.repository";
 
 @Route("product")
@@ -35,9 +36,9 @@ export default class ProductController {
     return getProduct(this._repository, Number(id));
   }
 
-  @Put("/")
-  public async updateProduct(@Body() body: IProductPayload): Promise<Products> {
-    return updateProduct(this._repository, body);
+  @Put("/:id")
+  public async updateProduct(@Path() id: number, @Body() body: IProductUpdatePayload): Promise<Products> {
+    return updateProduct(this._repository, body, id);
   }
 
   @Delete("/:id")

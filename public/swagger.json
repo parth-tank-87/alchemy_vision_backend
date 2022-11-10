@@ -217,11 +217,19 @@
 					"price": {
 						"type": "number",
 						"format": "double"
+					},
+					"updated": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time"
 					}
 				},
 				"required": [
 					"productid",
-					"price"
+					"updated"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -245,7 +253,28 @@
 					}
 				},
 				"required": [
-					"productid",
+					"productname",
+					"quantity",
+					"price"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IProductUpdatePayload": {
+				"properties": {
+					"productname": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
 					"productname",
 					"quantity",
 					"price"
@@ -528,7 +557,7 @@
 				]
 			}
 		},
-		"/product": {
+		"/product/all": {
 			"get": {
 				"operationId": "GetProducts",
 				"responses": {
@@ -551,7 +580,9 @@
 				],
 				"security": [],
 				"parameters": []
-			},
+			}
+		},
+		"/product": {
 			"post": {
 				"operationId": "CreateProduct",
 				"responses": {
@@ -586,6 +617,80 @@
 		"/product/{id}": {
 			"get": {
 				"operationId": "GetProduct",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Products"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Product"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateProduct",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Products"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Product"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IProductUpdatePayload"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "RemoveProduct",
 				"responses": {
 					"200": {
 						"description": "Ok",

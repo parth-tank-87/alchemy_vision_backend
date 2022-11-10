@@ -1,8 +1,13 @@
-import { Repository } from "typeorm";
+import { Repository, UpdateResult } from "typeorm";
 import { Products } from "../models";
-
 export interface IProductPayload {
   productid?: number;
+  productname: string;
+  quantity: number;
+  price: number;
+}
+
+export interface IProductUpdatePayload {
   productname: string;
   quantity: number;
   price: number;
@@ -25,11 +30,14 @@ export const createProduct = async (
 
 export const updateProduct = async (
   _repository: Repository<Products>,
-  payload: IProductPayload
-): Promise<Products> => {
-  const product = new Products();
-  return _repository.save(product);
+  payload: IProductUpdatePayload,
+  id: number,
+): Promise<Products | any> => {
+  return await _repository.update({productid: id}, {
+    ...payload
+  });
 };
+
 
 export const getProduct = async (_repository: Repository<Products>, id: number): Promise<Products | null> => {
   const product = await _repository.findOne({ where: { productid: id} });
