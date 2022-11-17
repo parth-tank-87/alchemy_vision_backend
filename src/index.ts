@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import './schedulers';
 import { createConnection } from "typeorm";
 import express, { Application } from "express";
 import morgan from "morgan";
@@ -8,11 +9,11 @@ import dbConfig from "./config/database";
 import addErrorHandler from "./middleware/error-handler";
 import { getApiLimiter } from "./services/rate-limit";
 import * as path from 'path';
-
+import cors from 'cors';
 const PORT = process.env.PORT || 8000;
-
 const app: Application = express();
 
+app.use(cors())
 app.use('', getApiLimiter());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

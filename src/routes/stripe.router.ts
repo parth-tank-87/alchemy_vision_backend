@@ -1,9 +1,13 @@
 import express from "express";
+import { Plans } from "../models/plans";
 import Stripe from "stripe";
+import { getRepository } from "typeorm";
 import config from "../config/app.config";
 import messages from "../config/messages";
+import { body, validationResult } from "express-validator";
+import { StatusCodes } from "http-status-codes";
 
-const customerId = 'cus_MgoHfjV0l9VKBY';
+const customerId = 'cus_MgnkwlAbQbi16E';
 
 const stripe = new Stripe(config.stripeSecretKey || "", {
   apiVersion: config.apiVersion,
@@ -13,6 +17,55 @@ const router = express.Router();
 
 router.get("/", async (_req, res) => {
   return res.send("welcome to stripe implementation!!");
+});
+
+router.get("/card-details", async (_req, res) => {
+  const paymentMethods = await stripe.paymentMethods.list({
+    customer: customerId,
+    type: 'card',
+  });
+  return res.send({
+    paymentMethods
+  });
+});
+
+router.post("/payment-intent", 
+body('planId').notEmpty(),
+body('price').notEmpty().isNumeric(),
+async (_req, res) => {
+  const errors = validationResult(_req);
+  if (!errors.isEmpty()) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array() });
+  }
+  
+  const { planId, price } = _req.body;
+  const _repository = getRepository(Plans);
+  const planDetail = await _repository.findOne({ where: { id: planId} });
+
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: price,
+    currency: 'usd',
+    payment_method_types: ['card'],
+    customer: customerId,
+    capture_method: 'automatic',
+    description: 'Software development services',
+  });
+  return res.send(paymentIntent);
+});
+
+router.post("/payment/confirm", async (req, res) => {
+  const { paymentIntent, paymentMethod } = req.body;
+  try {
+    const intent = await stripe.paymentIntents.confirm(paymentIntent, {
+      payment_method: paymentMethod,
+    });
+
+    /* Update the status of the payment to indicate confirmation */
+    res.status(200).json(intent);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json("Could not confirm payment");
+  }
 });
 
 router.post("/create-user", async (_req, res) => {
@@ -152,6 +205,19 @@ router.get("/customer", async (_req, res) => {
   try {
     const customer = await stripe.customers.retrieve(customerId);
     return res.send({
+      customer
+    });
+  } catch (e) {
+    console.log("error: ", e);
+  }
+});
+
+router.get("/stripe/customer/:customerId", async (_req, res) => {
+  try {
+    const { customerId } = _req.params;
+    const customer = await stripe.customers.retrieve(customerId);
+    return res.send({
+      success: true,
       customer
     });
   } catch (e) {

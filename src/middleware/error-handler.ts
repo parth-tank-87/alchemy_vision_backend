@@ -1,7 +1,7 @@
 import * as util from "util";
 import * as express from "express";
 import { StatusCodes } from "http-status-codes";
-import ApiError from "../abstractions/ApiError";
+import ApiError from "../types/ApiError";
 import logger from "../services/logger";
 
 const addErrorHandler = (
@@ -10,7 +10,6 @@ const addErrorHandler = (
   res: express.Response,
   next: express.NextFunction
 ): void => {
-  console.log("yghuhuyhyuhuy: ", err);
   if (err) {
     const status: number = err.status || StatusCodes.INTERNAL_SERVER_ERROR;
     logger.debug(`REQUEST HANDLING ERROR:

@@ -4,3 +4,4 @@ export interface AppConfig {
   apiVersion: Stripe.LatestApiVersion;
   stripeSecretKey: string;
 }
+ 
