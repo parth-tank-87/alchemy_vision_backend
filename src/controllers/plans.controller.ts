@@ -1,15 +1,15 @@
-import { Get, Route, Tags,  Post, Body, Path } from "tsoa";
+import { Get, Route, Tags, Post, Body, Path } from "tsoa";
 import { 
   getPlan, 
   getPlans, 
   createPlan, 
   purchasePlan, 
   IPlanPayload, 
-  IPurchasePlanPayload
+  IPurchasePlanPayload,
+  getSubsctiptions
 } from "../repositories/plans.repository";
-import { Repository } from "typeorm";
+import { getRepository, Repository } from "typeorm";
 import { Plans, Subscriptions } from '../models';
-import dataSource from "../server";
 
 @Route("plan")
 @Tags("plan")
@@ -19,8 +19,8 @@ export default class PlansController {
   protected _subscriptionRepos: Repository<Subscriptions>;
 
   constructor() {
-    this._planRepo = dataSource.getRepository(Plans);
-    this._subscriptionRepos = dataSource.getRepository(Subscriptions);
+    this._planRepo = getRepository(Plans);
+    this._subscriptionRepos = getRepository(Subscriptions);
   }
 
   @Get("/")
@@ -38,8 +38,14 @@ export default class PlansController {
     return createPlan(this._planRepo, body);
   }
 
-  @Post("/plan/purchase")
+  @Post("/purchase")
   public async purchasePlan(@Body() body: IPurchasePlanPayload): Promise<Subscriptions> {
-    return purchasePlan(this._subscriptionRepos, body);
+    const request = { ...body, status: '1'};
+    return purchasePlan(this._subscriptionRepos, request);
   }
+
+  @Post("/subscriptions")
+  public async getSubscriptions(): Promise<Subscriptions[]> {
+    return getSubsctiptions(this._subscriptionRepos);
+  } 
 }

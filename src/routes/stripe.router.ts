@@ -1,7 +1,5 @@
 import express from "express";
-import { Plans } from "../models/plans";
 import Stripe from "stripe";
-import { getRepository } from "typeorm";
 import config from "../config/app.config";
 import messages from "../config/messages";
 import { body, validationResult } from "express-validator";
@@ -29,7 +27,7 @@ router.get("/card-details", async (_req, res) => {
   });
 });
 
-router.post("/payment-intent", 
+router.post("/payment-intent",
 body('planId').notEmpty(),
 body('price').notEmpty().isNumeric(),
 async (_req, res) => {
@@ -37,20 +35,25 @@ async (_req, res) => {
   if (!errors.isEmpty()) {
     return res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array() });
   }
-  
-  const { planId, price } = _req.body;
-  const _repository = getRepository(Plans);
-  const planDetail = await _repository.findOne({ where: { id: planId} });
 
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: price,
-    currency: 'usd',
-    payment_method_types: ['card'],
+  const setupIntent = await stripe.setupIntents.create({
     customer: customerId,
-    capture_method: 'automatic',
-    description: 'Software development services',
+    confirm: false
   });
-  return res.send(paymentIntent);
+  
+  // const { planId, price } = _req.body;
+  // const _repository = getRepository(Plans);
+  // const planDetail = await _repository.findOne({ where: { id: planId} });
+
+  // const paymentIntent = await stripe.paymentIntents.create({
+  //   amount: price,
+  //   currency: 'usd',
+  //   payment_method_types: ['card'],
+  //   customer: customerId,
+  //   capture_method: 'automatic',
+  //   description: 'Software development services',
+  // });
+  return res.send(setupIntent);
 });
 
 router.post("/payment/confirm", async (req, res) => {
@@ -59,11 +62,9 @@ router.post("/payment/confirm", async (req, res) => {
     const intent = await stripe.paymentIntents.confirm(paymentIntent, {
       payment_method: paymentMethod,
     });
-
-    /* Update the status of the payment to indicate confirmation */
     res.status(200).json(intent);
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.log("error: ", e);
     res.status(500).json("Could not confirm payment");
   }
 });
@@ -81,7 +82,7 @@ router.post("/create-user", async (_req, res) => {
       customer,
     });
   } catch (e) {
-    console.log("e: ", e);
+    console.log("error: ", e);
   }
 });
 

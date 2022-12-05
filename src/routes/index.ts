@@ -12,21 +12,21 @@ import AuthRouter from "./auth.router";
 
 const router = express.Router();
 router.get("/", async (_req, res) => {
-  return res.send("Welcome to the Alchemy Vision APIs!!!");
+  return res.send("Welcome to the AV APIs!!!");
 });
 router.get("/ping", async (_req, res) => {
   const controller = new PingController();
   const response = await controller.getMessage();
   return res.send(response);
 });
-router.use("/users", UserRouter)
-router.use("/posts", PostRouter)
-router.use("/comments", CommentRouter)
-router.use("/file-upload", FileUploadRouter)
-router.use("/stripe", StripeRouter)
-router.use("/product", new ProductRouter().router)
-router.use("/features", new FeaturesRouter().router)
-router.use("/plans", new PlansRouter().router)
-router.use("/", new AuthRouter().router)
+router.use("/users", UserRouter);
+router.use("/posts", PostRouter);
+router.use("/comments", CommentRouter);
+router.use("/file-upload", FileUploadRouter);
+router.use("/stripe", StripeRouter);
+router.use("/product", new ProductRouter().router);
+router.use("/features", new FeaturesRouter().router);
+router.use("/plans", new PlansRouter().router);
+router.use("/", new AuthRouter().router);
 
 export default router;

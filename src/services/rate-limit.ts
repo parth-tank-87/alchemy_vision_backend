@@ -1,9 +1,8 @@
-
 import { rateLimit } from 'express-rate-limit';
 
 const env = process.env.NODE_ENV || 'dev';
-const rateLimitRequest = Number(process.env.RATE_LIMIT_TIME) || 60;
 const rateLimitTime = Number(process.env.RATE_LIMIT_REQUEST) || 100;
+const rateLimitRequest = Number(process.env.RATE_LIMIT_TIME) || 60;
 
 export const getApiLimiter = () => {
     if (env === 'production') { 

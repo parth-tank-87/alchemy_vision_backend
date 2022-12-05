@@ -1,6 +1,5 @@
 import { Repository} from "typeorm";
 import { Users } from '../models'
-
 export interface IUserPayload {
   first_name: string;
   last_name: string;
@@ -12,7 +11,6 @@ export interface IUserPayload {
   role: number;
   password: string;
 }
-
 export interface ILoginPayload {
   email: string;
   password: string;

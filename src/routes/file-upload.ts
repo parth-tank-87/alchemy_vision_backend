@@ -24,6 +24,6 @@ async function uploadFiles(req: any, res: any) {
   } catch (e: any) {
     return res.status(422).json({ errors: [e.message] });
   }
-}
+};
 
 export default router;

@@ -41,7 +41,7 @@ export default class PlansRouter {
       }
     });
 
-    this.router.post("/plan/purchase", async (req, res) => {
+    this.router.post("/purchase", async (req, res) => {
       try {
         const response = await this.controller.purchasePlan(req.body);
         return res.status(StatusCodes.OK).send(response);
@@ -49,5 +49,16 @@ export default class PlansRouter {
         return res.send(e);
       }
     });
+
+    this.router.post("/subscriptions", async (req, res) => {
+      try {
+        const response = await this.controller.getSubscriptions();
+        return res.status(StatusCodes.OK).send(response);
+      } catch (e) {
+        console.log('e: ', e);
+        return res.send(e);
+      }
+    });
   }
 }
+ 

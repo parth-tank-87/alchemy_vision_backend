@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
-
+import { unitOfTime } from 'moment';
 @Entity()
 export class Subscriptions {
     @PrimaryGeneratedColumn()
@@ -15,7 +15,7 @@ export class Subscriptions {
     user_id!: string;
 
     @Column({type: 'text'})
-    plan_interval!: string;
+    plan_interval!: unitOfTime.DurationConstructor;
 
     @Column({type: 'text'})
     plan_date!: string;

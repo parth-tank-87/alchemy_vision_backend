@@ -1,6 +1,6 @@
+import { unitOfTime } from "moment";
 import { Repository} from "typeorm";
 import { Plans, Subscriptions } from '../models';
-
 export interface IPlanPayload {
   name: string;
   description: string;
@@ -18,7 +18,7 @@ export interface IPurchasePlanPayload {
   plan_id: string;
   stripe_customer_id: string;
   user_id: string;
-  plan_interval: string;
+  plan_interval: unitOfTime.DurationConstructor;
   plan_date: string;
   status: string;
 }
@@ -47,4 +47,8 @@ export const purchasePlan  = async (_repository: Repository<Subscriptions>, payl
     ...subscriptions,
     ...payload
   });
+}
+
+export const getSubsctiptions  = async (_repository: Repository<Subscriptions>) : Promise<Subscriptions[]> => {
+  return _repository.find({withDeleted: false});
 }
